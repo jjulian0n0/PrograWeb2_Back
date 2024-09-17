@@ -1,0 +1,19 @@
+{
+  "name": "npf-first",
+  "version": "1.0.0",
+  "description": "Primer proyecto NPM con express",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "J JULIAN CERDA S",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^5.19.1",
+    "express": "^4.21.0"
+  },
+  "devDependencies": {
+    "prisma": "^5.19.1"
+  }
+}
