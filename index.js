@@ -56,7 +56,7 @@ app.post('/user', async (req, res) => {
   }
 });
 
-// FUNCION LOGIN
+//                                              FUNCION LOGIN
 app.post('/login0', async (req, res) => {
   const { email, contrasena } = req.body; //Los obtenemos del JSON 
 
@@ -78,6 +78,34 @@ app.post('/login0', async (req, res) => {
   }
 });
 
+
+//                                              Editar usuario
+app.post('/alterUser', async (req, res) => {
+  const { id, nombre , contrasena, foto, fBaja } = req.body; //Los obtenemos del JSON 
+
+  try {
+    
+    const newUser = await prisma.user.update({
+      where: {
+        id : id
+
+      },
+      data: {
+        nombre: nombre,
+        contrasena: contrasena,
+        foto: foto || null, // Si no se envía foto, guardamos null
+        fBaja: fBaja ? new Date(fBaja) : null
+
+      }
+    });
+
+
+    res.status(201).json('User editado'); 
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'User no encontrado' });
+  }
+});
 
 
 //Cada que inicializo mi puerto con npm start*
