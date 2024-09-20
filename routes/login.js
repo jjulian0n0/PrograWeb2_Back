@@ -1,20 +1,29 @@
 const express = require('express');
 const router = express.Router();  // Crear el router
 
-// Ruta GET para mostrar el formulario de login
-router.get('/', (req, res) => {
-  res.json({ message: 'Formulario de login' });
-});
+//Conectar con prisma
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
-// Ruta POST para procesar los datos del formulario de login
-router.post('/', (req, res) => {
-  const { username, password } = req.body;
 
-  // Validación simple (ejemplo)
-  if (username === 'admin' && password === '1234') {
-    res.json({ message: 'Login exitoso' });
-  } else {
-    res.json({ message: 'Credenciales inválidas' });
+router.post('/', async (req, res) => {
+  const { email, contrasena } = req.body; //Los obtenemos del JSON 
+
+  try {
+    
+    const newUser = await prisma.user.findUnique({
+      where: {
+        email : email,
+        contrasena : contrasena
+
+      },
+    });
+
+
+    res.status(201).json('User encontrado'); 
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'User no encontrado' });
   }
 });
 

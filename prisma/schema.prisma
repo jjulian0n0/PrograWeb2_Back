@@ -22,4 +22,45 @@ model User {
   contrasena String
   foto String?
   fBaja DateTime? 
+    playlists  Playlist[]  
+    videos  Video[]
 }
+
+//      |||||     VIDEO
+model Video {
+  id  Int @id @default(autoincrement())
+  nombre  String?
+  ruta  String?
+  fAlta DateTime  @default(now())
+  fBaja DateTime?
+  user   User    @relation(fields: [userId], references: [id])
+  userId Int     @unique
+}
+
+
+
+//      |||||   Playlists y Playlist_Content
+model Playlist {
+  id          Int        @id @default(autoincrement())
+  userId      Int        
+  nombre      String     @db.VarChar(255)
+  descripcion String?    @db.Text
+  status      String     @default("Activo")
+  user        User       @relation(fields: [userId], references: [id]) 
+  contents    PlaylistContent[] 
+
+  @@index([userId]) 
+}
+
+model PlaylistContent {
+  id          Int        @id @default(autoincrement())
+  playlistId  Int        
+  videoId     Int        
+  status      String     @default("Activo") 
+  playlist    Playlist   @relation(fields: [playlistId], references: [id]) 
+
+  @@index([playlistId, videoId]) 
+}
+
+
+//      |||||   Comentarios
