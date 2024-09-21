@@ -24,6 +24,7 @@ model User {
   fBaja DateTime? 
     playlists  Playlist[]  
     videos  Video[]
+    comentario Comentario[]
 }
 
 //      |||||     VIDEO
@@ -35,6 +36,7 @@ model Video {
   fBaja DateTime?
   user   User    @relation(fields: [userId], references: [id])
   userId Int     @unique
+  comentario Comentario[]
 }
 
 
@@ -64,3 +66,14 @@ model PlaylistContent {
 
 
 //      |||||   Comentarios
+model z {
+  id        Int      @id @default(autoincrement())   
+
+  texto     String
+  fAlta     DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  video     Video    @relation(fields: [videoId], references: [id])
+  videoId   Int   
+
+}

@@ -3,6 +3,7 @@ const loginRouter = require('./routes/login');  // Importar el router de login
 const userRouter = require('./routes/user');  // Importar el router de user
 const videoRouter = require('./routes/video');  // Importar el router de video
 const playlistRouter = require('./routes/playlist');  // Importar el router de playlist
+const comentarioRouter = require('./routes/comentarios');  // Importar el router de playlist
 
 const app = express();
 const PORT = 3000;
@@ -18,6 +19,7 @@ app.use('/login', loginRouter);
 app.use('/user', userRouter);
 app.use('/video', videoRouter);
 app.use('/playlist', playlistRouter);
+app.use('/comentarios', comentarioRouter);
 
 
 
