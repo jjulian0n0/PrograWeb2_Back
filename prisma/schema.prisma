@@ -36,7 +36,7 @@ model Video {
   fAlta DateTime  @default(now())
   fBaja DateTime?
   user   User    @relation(fields: [userId], references: [id])
-  userId Int     @unique
+  userId Int     
   comentario Comentario[]
 }
 
