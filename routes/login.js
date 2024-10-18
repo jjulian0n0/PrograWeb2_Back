@@ -20,13 +20,7 @@ router.post('/', async (req, res) => {
     });
 
 
-    if(newUser == null){
-    res.status(500).json({ error: 'User no encontrado' });
-
-    }else{
-    res.status(201).json(newUser.id);
-
-    }
+    res.status(201).json('User encontrado'); 
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'User no encontrado' });
