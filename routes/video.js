@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 
 //                                  |||| ----       POST crear video      ---- |||||
     router.post("/", async (req, res) => {
-        const { nombre, ruta, userId, fBaja } = req.body;
+        const { nombre, desc, ruta, userId, fBaja } = req.body;
 
         try {
             //Crear un nuevo video en la base de datos
@@ -17,6 +17,7 @@ const prisma = new PrismaClient();
             const newVideo = await prisma.video.create({
                 data: {
                     nombre: nombre,
+                    desc: desc,
                     ruta: ruta,
                     userId: userId,
                     fBaja: fBaja ? new Date(fBaja) : null
@@ -35,7 +36,7 @@ const prisma = new PrismaClient();
 
 //                                  |||| ----       PUT modificar video      ---- |||||
     router.put("/update", async (req, res) => {
-        const { id, nombre, ruta, fBaja } = req.body;
+        const { id, nombre, desc, ruta, fBaja } = req.body;
 
         try {
             await prisma.video.update({
@@ -44,6 +45,7 @@ const prisma = new PrismaClient();
                 },
                 data: {
                     nombre: nombre,
+                    desc: desc,
                     ruta: ruta,
                     fBaja: fBaja ? new Date(fBaja) : null
                 },
