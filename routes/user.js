@@ -1,5 +1,6 @@
 const express = require('express');
 const multer = require('multer');
+const path = require('path');
 const router = express.Router();  // Crear el router
 
 //Conectar con prisma
@@ -7,7 +8,30 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 //fotos multer
-const uploadFoto = multer({dest:'../uploads/fotos/'});
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, '../uploads/fotos/'); // Asegúrate de que esta ruta exista
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname)); // Renombrar el archivo para evitar conflictos
+  }
+});
+
+// Filtro para validar el tipo de archivo
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg']; // Tipos permitidos
+  if (allowedTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error('Tipo de archivo no permitido. Debe ser JPG o PNG.'), false);
+  }
+};
+
+const uploadFoto = multer({ 
+  storage: storage,
+  fileFilter: fileFilter
+});
 
 
 

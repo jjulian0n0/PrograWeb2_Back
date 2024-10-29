@@ -34,4 +34,59 @@ router.post('/', async (req, res) => {
   }
 });
 
+router.get('/', async (req, res) => {
+  const { email, contrasena } = req.body; //Los obtenemos del JSON 
+
+  try {
+    
+    const newUser = await prisma.user.findUnique({
+      where: {
+        email : email,
+        contrasena : contrasena
+
+      },
+    });
+
+
+    if(newUser == null){
+    res.status(500).json({ error: 'User no encontrado' });
+
+    }else{
+    res.status(200).json({newUser})
+  };
+
+    
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'User no encontrado' });
+  }
+});
+
+router.get('/perfil/:id', async (req, res) => {
+  const {  id } = req.params; //Los obtenemos del JSON 
+
+  try {
+    
+    const newUser = await prisma.user.findUnique({
+      where: {
+        id : Number(id)
+
+      },
+    });
+
+
+    if(newUser == null){
+    res.status(500).json({ error: 'User no encontrado' });
+
+    }else{
+    res.status(200).json({newUser})
+  };
+
+    
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'User no encontrado' });
+  }
+});
+
 module.exports = router;  // Exportar el router
