@@ -67,7 +67,7 @@ router.get('/perfil/:id', async (req, res) => {
 
   try {
     
-    const newUser = await prisma.user.findUnique({
+    const userProfile = await prisma.user.findUnique({
       where: {
         id : Number(id)
 
@@ -75,11 +75,11 @@ router.get('/perfil/:id', async (req, res) => {
     });
 
 
-    if(newUser == null){
+    if(userProfile == null){
     res.status(500).json({ error: 'User no encontrado' });
 
     }else{
-    res.status(200).json({newUser})
+    res.status(200).json({userProfile})
   };
 
     

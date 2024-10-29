@@ -9,18 +9,18 @@ const prisma = new PrismaClient();
 
 //fotos multer
 
-const storage = multer.diskStorage({
+const storage = multer.diskStorage({ //En caso de que omitas el objeto con las opciones, los archivos serán guardados en la memoria y nunca serán escritos en el disco.
   destination: (req, file, cb) => {
-    cb(null, '../uploads/fotos/'); // Asegúrate de que esta ruta exista
+    cb(null, '../uploads/fotos/'); //Si no existe la crea
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); // Renombrar el archivo para evitar conflictos
+    cb(null, Date.now() + path.extname(file.originalname)); //Le asignamso un nuevo nombre
   }
 });
 
-// Filtro para validar el tipo de archivo
+
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg']; // Tipos permitidos
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg']; 
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
