@@ -1,6 +1,6 @@
 const express = require('express');
-
 const cors = require('cors');
+const multer = require('multer');
 
 const loginRouter = require('./routes/login');  // Importar el router de login
 const userRouter = require('./routes/user');  // Importar el router de user
@@ -19,8 +19,12 @@ const prisma = new PrismaClient();
 
 app.use(express.json()); //usar funciones JSON
 
-// Permite CORS para todas las solicitudes
+// Permite CORS para todas las solicitudes 
 app.use(cors());
+
+//Multer (las carpetas se crean solas)
+const uploadFoto = multer({dest:'uploads/fotos/'});
+const uploadVideo = multer({dest:'uploads/videos/'});
 
 // Usar la ruta de los router para cuando mandemos llamar
 app.use('/login', loginRouter);
@@ -28,6 +32,16 @@ app.use('/user', userRouter);
 app.use('/video', videoRouter);
 app.use('/playlist', playlistRouter);
 app.use('/comentarios', comentarioRouter);
+
+
+//Prueba multer
+app.post/('/img/simple', uploadFoto.single('fotoPerfil', (req,res) => {
+
+  console.log(req.file);
+  res.send('fin');
+
+
+}));
 
 
 

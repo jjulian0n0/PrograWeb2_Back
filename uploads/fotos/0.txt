@@ -1,0 +1,1 @@
+Para que la carpeta de fotos se suba al git

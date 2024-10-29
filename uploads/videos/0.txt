@@ -1,0 +1,1 @@
+Para que la carpeta de videos se suba al git

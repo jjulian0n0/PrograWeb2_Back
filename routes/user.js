@@ -1,16 +1,22 @@
 const express = require('express');
+const multer = require('multer');
 const router = express.Router();  // Crear el router
 
 //Conectar con prisma
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
+//fotos multer
+const uploadFoto = multer({dest:'../uploads/fotos/'});
+
 
 
 //                                  |||| ----       POST crear user      ---- |||||
-router.post('/', async (req, res) => {
-    const { nombre, email, contrasena, foto, fBaja } = req.body; //Los obtenemos del JSON 
+router.post('/', uploadFoto.single('foto'), async (req, res) => {
+    const { nombre, email, contrasena, fBaja } = req.body; //Los obtenemos del JSON 
   
+    const foto = req.file ? req.file.path : null;
+
     try {
       // Crear un nuevo usuario en la base de datos
       // Funcion await para que nuestra funcion async no explote si se tarda
@@ -28,12 +34,11 @@ router.post('/', async (req, res) => {
       
       */
       const newUser = await prisma.user.create({
-        data: {
-          nombre: nombre,
-          email: email,
-          contrasena: contrasena,
-          foto: foto || null, // Si no se envía foto, guardamos null
-          fBaja: fBaja ? new Date(fBaja) : null // Si no se envía fBaja, guardamos null
+        data: {nombre,
+          email,
+          contrasena,
+          foto, // Envía URL de la foto o null
+          fBaja: fBaja ? new Date(fBaja) : null
         },
       });
   
