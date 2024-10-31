@@ -98,7 +98,25 @@ const storage = multer.diskStorage({ //En caso de que omitas el objeto con las o
         }
     });
 
+    router.get("/busqueda", async (req, res) => {
+        const {name} = req.query;
 
+        try {
+            const video = await prisma.video.findMany({
+                where: {
+                    nombre: {
+                        contains : name || "",
+                        mode: "insensitive" //ingora mayusculas y minusculas
+                    },
+                },
+            });
+
+            res.status(201).json(video);
+        } catch ( error ) {
+            console.error(error);
+            res.status(500).json({ error: 'Error al encontrar video'});
+        }
+    });
 //                                  |||| ----       GET un video por ID      ---- |||||
 
     router.get("/:id", async (req, res) => {
@@ -107,7 +125,7 @@ const storage = multer.diskStorage({ //En caso de que omitas el objeto con las o
         try {
             const video = await prisma.video.findUnique({
                 where: {
-                    id: Number(id)
+                    id: Number(id) || 0
                 },
             });
 
@@ -123,7 +141,7 @@ const storage = multer.diskStorage({ //En caso de que omitas el objeto con las o
         }
     });
 //
-
+/* 
 router.get("/", async (req, res) => {
     const { id} = req.body;
 
@@ -139,30 +157,12 @@ router.get("/", async (req, res) => {
         console.error(error);
         res.status(500).json({ error: 'Error al encontrar video'});
     }
-});
+});*/
 
 
 //                                  |||| ----       GET busca videos que contengan en su nombre el string name      ---- |||||
 
-    router.get("/busqueda", async (req, res) => {
-        const {name} = req.body;
-
-        try {
-            const video = await prisma.video.findMany({
-                where: {
-                    nombre: {
-                        contains : name,
-                        mode: "insensitive" //ingora mayusculas y minusculas
-                    },
-                },
-            });
-
-            res.status(201).json(video);
-        } catch ( error ) {
-            console.error(error);
-            res.status(500).json({ error: 'Error al encontrar video'});
-        }
-    });
+    
 
 
 
