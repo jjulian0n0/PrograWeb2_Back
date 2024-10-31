@@ -101,23 +101,45 @@ const storage = multer.diskStorage({ //En caso de que omitas el objeto con las o
 
 //                                  |||| ----       GET un video por ID      ---- |||||
 
-    router.get("/", async (req, res) => {
-        const { id} = req.body;
+    router.get("/:id", async (req, res) => {
+        const { id } = req.params;
 
         try {
             const video = await prisma.video.findUnique({
                 where: {
-                    id: id
+                    id: Number(id)
                 },
             });
 
-            res.status(201).json(video);
+            if (video) {
+                res.status(200).json(video); // Usa 200 para respuestas exitosas
+            } else {
+                res.status(404).json({ error: 'Video no encontrado' });
+            }
+
         } catch ( error ) {
             console.error(error);
             res.status(500).json({ error: 'Error al encontrar video'});
         }
     });
+//
 
+router.get("/", async (req, res) => {
+    const { id} = req.body;
+
+    try {
+        const video = await prisma.video.findUnique({
+            where: {
+                id: id
+            },
+        });
+
+        res.status(201).json(video);
+    } catch ( error ) {
+        console.error(error);
+        res.status(500).json({ error: 'Error al encontrar video'});
+    }
+});
 
 
 //                                  |||| ----       GET busca videos que contengan en su nombre el string name      ---- |||||
