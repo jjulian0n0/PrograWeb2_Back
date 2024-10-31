@@ -11,7 +11,7 @@ const prisma = new PrismaClient();
 
 const storage = multer.diskStorage({ //En caso de que omitas el objeto con las opciones, los archivos serán guardados en la memoria y nunca serán escritos en el disco.
   destination: (req, file, cb) => {
-    cb(null, '../uploads/fotos/'); //Si no existe la crea
+    cb(null, 'uploads/fotos/'); //Si no existe la crea anterior '../uploads/fotos/'
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname)); //Le asignamso un nuevo nombre

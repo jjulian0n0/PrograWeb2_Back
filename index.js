@@ -19,8 +19,9 @@ const prisma = new PrismaClient();
 
 app.use(express.json()); //usar funciones JSON
 
-// Permite CORS para todas las solicitudes 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173' // Solo permite solicitudes desde este origen
+}));
 
 //Multer (las carpetas se crean solas)
 const uploadFoto = multer({dest:'uploads/fotos/'});
@@ -32,6 +33,8 @@ app.use('/user', userRouter);
 app.use('/video', videoRouter);
 app.use('/playlist', playlistRouter);
 app.use('/comentarios', comentarioRouter);
+
+app.use('/uploads', express.static('uploads')); //Hacer publicas mis fotos
 
 
 //Prueba multer

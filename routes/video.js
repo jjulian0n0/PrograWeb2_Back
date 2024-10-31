@@ -1,4 +1,7 @@
 const express = require('express');
+const multer = require('multer'); //Videos
+const path = require('path'); //Para la url del video
+
 const router = express.Router();  // Crear el router
 
 //Conectar con prisma
@@ -6,10 +9,47 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 
+// Copia de fotos multer pero para video
+const storage = multer.diskStorage({ //En caso de que omitas el objeto con las opciones, los archivos serán guardados en la memoria y nunca serán escritos en el disco.
+    destination: (req, file, cb) => {
+      cb(null, 'uploads/videos/'); //Si no existe la crea anterior '../uploads/fotos/'
+    },
+    filename: (req, file, cb) => {
+      cb(null, Date.now() + path.extname(file.originalname)); //Le asignamso un nuevo nombre
+    }
+  });
+
+  //
+
+  const fileFilter = (req, file, cb) => {
+    const allowedTypes = ['video/mp4'];  // Se puede sin el if Lol
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Tipo de archivo no permitido. Debe ser mp4.'), false);
+    }
+  };
+  
+  const uploadVideo = multer({ 
+    storage: storage,
+    fileFilter: fileFilter
+  });
+
+
+
+
+
+
+
+
+
+
 
 //                                  |||| ----       POST crear video      ---- |||||
-    router.post("/", async (req, res) => {
-        const { nombre, desc, ruta, userId, fBaja } = req.body;
+    router.post("/", uploadVideo.single('ruta') , async (req, res) => {
+        const { nombre, desc, userId, fBaja } = req.body;
+
+        const ruta = req.file ? req.file.path : null;
 
         try {
             //Crear un nuevo video en la base de datos
@@ -19,7 +59,7 @@ const prisma = new PrismaClient();
                     nombre: nombre,
                     desc: desc,
                     ruta: ruta,
-                    userId: userId,
+                    userId: Number(userId),
                     fBaja: fBaja ? new Date(fBaja) : null
                 },
             });
