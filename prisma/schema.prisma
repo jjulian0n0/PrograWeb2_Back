@@ -22,6 +22,8 @@ model User {
   contrasena String
   foto String?
   fBaja DateTime? 
+    suscriptores  User[] @relation("Suscripciones")
+    suscripciones User[]  @relation("Suscripciones")
     playlists  Playlist[]  
     videos  Video[]
     comentario Comentario[]

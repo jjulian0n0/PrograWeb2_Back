@@ -58,7 +58,8 @@ router.post('/', uploadFoto.single('foto'), async (req, res) => {
       
       */
       const newUser = await prisma.user.create({
-        data: {nombre,
+        data: {
+          nombre,
           email,
           contrasena,
           foto, // Envía URL de la foto o null
@@ -95,7 +96,7 @@ router.post('/update', async (req, res) => {
       });
   
   
-      res.status(201).json('User editado'); 
+      res.status(200).json('User editado'); 
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'User no encontrado' });
@@ -103,5 +104,115 @@ router.post('/update', async (req, res) => {
   });
 
 
+//                                  |||| ----       POST subscribe user      ---- |||||
+router.post('/subscribe', async (req, res) => {
+
+    //Le mandamos el usuario en sesion y el id del canal(usuario) al que quiere suscribirse
+    const { usuarioId, canalId } = req.body; 
+
+    /*
+    Ejemplo de como pasar los ids
+    
+    {
+      "usuarioId": 7,
+      "canalId": 8
+    } 
+    */
+
+    try {
+
+      await prisma.user.update({
+          where: { id: usuarioId },
+          data: { suscripciones: { connect: [{ id: canalId }] } }
+      });
+
+      await prisma.user.update({
+        where: { id: canalId },
+        data: { suscriptores: { connect: [{ id: usuarioId }] } }
+      });
+
+      res.status(201).json('Nueva Suscripcion hecha');
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Error en suscripcion' });
+    }
+});
+
+//                                  |||| ----       POST Unsubscribe user      ---- |||||
+router.post('/unsubscribe', async (req, res) => {
+
+  //Le mandamos el usuario en sesion y el id del canal(usuario) del que quiere eliminar la suscripcion
+  const { usuarioId, canalId } = req.body; 
+
+  try {
+
+    await prisma.user.update({
+        where: { id: usuarioId },
+        data: { suscripciones: { disconnect: [{ id: canalId }] } }
+    });
+
+    await prisma.user.update({
+      where: { id: canalId },
+      data: { suscriptores: { disconnect: [{ id: usuarioId }] } }
+    });
+
+    res.status(200).json('Suscripcion cancelada');
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al cancelar suscripcion' });
+  }
+});
+
+//                                  |||| ----       GET Suscripciones      ---- |||||
+router.get('/subscriptions/:usuarioId', async (req, res) => {
+  const { usuarioId } = req.params;
+
+  try {
+
+    //Este query devuelve la lista de suscripciones de un usuario
+    //Para acceder al resultado en el front seria por ejemplo "data.suscripciones ..."
+    //Donde 'data' es la respuesta al llamado con el metodo fetch del lado del front
+    const lista = await prisma.user.findUnique({
+        where: { id: Number(usuarioId) },
+        select: { suscripciones: true }
+    });
+
+    if (lista) {
+      res.status(200).json(lista);
+    } else {
+      res.status(404).json({ error: 'Suscripciones no encontradas' });
+    }
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al obtener suscripciones' });
+  }
+});
+
+//                                  |||| ----       GET Total Suscriptores      ---- |||||
+router.get('/subscribers/:canalId', async (req, res) => {
+  const { canalId } = req.params;
+
+  try {
+
+    //Este query devuelve el total de suscriptores de un canal
+    //Para acceder al resultado en el front seria por ejemplo "data._count.suscriptores"
+    //Donde 'data' es la respuesta al llamado con el metodo fetch del lado del front
+    const totalSuscriptores = await prisma.user.findUnique({
+        where: { id: Number(canalId) },
+        select: {
+          _count: {
+            select: { suscriptores: true }
+          }
+        }
+    });
+
+    res.status(200).json(totalSuscriptores);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al obtener total de suscriptores' });
+  }
+});
 
 module.exports = router;  // Exportar el router
