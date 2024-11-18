@@ -127,6 +127,13 @@ const storage = multer.diskStorage({ //En caso de que omitas el objeto con las o
                 where: {
                     id: Number(id) || 0
                 },
+                include: { 
+                    user: {
+                        select: {
+                            nombre: true 
+                        }
+                    }
+                },
             });
 
             if (video) {
