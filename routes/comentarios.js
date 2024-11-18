@@ -32,6 +32,14 @@ router.post('/', async (req, res) => {
           userId : userId,
           videoId: videoId,
         },
+        include: {
+          user: { // Incluye los datos del usuario
+            select: {
+              nombre: true,
+              foto: true,
+            },
+          },
+        },
       });
   
       res.status(201).json(newComent); 
@@ -71,14 +79,22 @@ router.post('/update', async (req, res) => {
 
 //                                  |||| ----       POST update user      ---- |||||
 
-  router.get("/video", async (req, res) => {
-    const { videoId} = req.body;
+  router.get("/:videoId", async (req, res) => {
+    const { videoId } = req.params; 
 
     try {
         const comentariosVideo = await prisma.comentario.findMany({
             where: {
-              videoId : videoId
+              videoId : parseInt(videoId) 
             },
+            include: {
+                user: { 
+                    select: {
+                        nombre: true,
+                        foto: true
+                    }
+                }
+            }
         });
 
         res.status(201).json(comentariosVideo);
