@@ -163,22 +163,33 @@ router.post('/unsubscribe', async (req, res) => {
   }
 });
 
-//                                  |||| ----       GET Suscripciones      ---- |||||
-router.get('/subscriptions/:usuarioId', async (req, res) => {
-  const { usuarioId } = req.params;
+//                                  |||| ----       GET Suscripcion      ---- |||||
+router.get('/subscription', async (req, res) => {
+  const { usuarioId, canalId } = req.query;
 
   try {
 
     //Este query devuelve la lista de suscripciones de un usuario
-    //Para acceder al resultado en el front seria por ejemplo "data.suscripciones ..."
-    //Donde 'data' es la respuesta al llamado con el metodo fetch del lado del front
     const lista = await prisma.user.findUnique({
         where: { id: Number(usuarioId) },
         select: { suscripciones: true }
     });
 
+    //Lo que se devolvera en este endpoint es si el usuario esta o no suscrito al canal
     if (lista) {
-      res.status(200).json(lista);
+      let estaSuscrito = false;
+      for (let i=0; i < lista.suscripciones.length; i++) {
+        const element = lista.suscripciones[i];
+        if(element.id == canalId) {
+          estaSuscrito = true;
+        }
+      }
+      if(estaSuscrito) {
+        res.status(200).json({ res: 'Esta suscrito'});
+      } else {
+        res.status(200).json({ res: 'No esta suscrito'});
+      }
+      
     } else {
       res.status(404).json({ error: 'Suscripciones no encontradas' });
     }
