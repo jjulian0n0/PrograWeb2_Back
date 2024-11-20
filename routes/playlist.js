@@ -68,12 +68,16 @@ const prisma = new PrismaClient();
 //                                  |||| ----       Obtener videos de la PL      ---- |||||
 
       router.get('/:playlistID', async (req, res) => {
-        const { playlistId } = req.params; 
+        const playlistID = parseInt(req.params.playlistID, 10);
         
+        if (isNaN(playlistID)) {
+          return res.status(400).json({ error: 'ID de Playlist invalida' });
+        }
+
         try {
           const allPlaylistContent = await prisma.playlistContent.findMany({
             where: {
-                playlistId: playlistId
+              playlistId: playlistID
             },
           });
       
