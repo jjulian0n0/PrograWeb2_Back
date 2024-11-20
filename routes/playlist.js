@@ -47,15 +47,29 @@ const prisma = new PrismaClient();
             }
             */
             try {
-              const newPlaylistContent = await prisma.playlistContent.create({
+
+              // Verifico si este video ya existe en la playlist para no volver a agregarlo
+              const registro = await prisma.playlistContent.findFirst({
+                where: {
+                  playlistId: playlistId,
+                  videoId: videoId,
+                  status: 'Activo'
+                },
+              });
+
+              if(!registro) {
+                const newPlaylistContent = await prisma.playlistContent.create({
                 data: {
                   playlistId: playlistId,
                   videoId: videoId,
                   status: status || 'Activo' 
                 },
-              });
+                });
           
-              res.status(201).json(newPlaylistContent); 
+                res.status(201).json({ res: newPlaylistContent}); 
+              } else {
+                res.status(200).json({ res: 'Este video ya fue agregado'});
+              }
             } catch (error) {
               console.error(error);
               res.status(500).json({ error: 'Error al crear el contenido de la playlist' });
