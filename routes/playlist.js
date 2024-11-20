@@ -67,15 +67,9 @@ const prisma = new PrismaClient();
 
 //                                  |||| ----       Obtener videos de la PL      ---- |||||
 
-      router.get('/', async (req, res) => {
-        const { playlistId } = req.body; 
-        /* Escribimos esto en el JSON para que funcione:
-        {
-          "playlistId": 1,
-          "videoId": 1,
-          "status": "Activo"
-        }
-        */
+      router.get('/:playlistID', async (req, res) => {
+        const { playlistId } = req.params; 
+        
         try {
           const allPlaylistContent = await prisma.playlistContent.findMany({
             where: {
@@ -93,5 +87,29 @@ const prisma = new PrismaClient();
         }
   });
 
+  //                                  |||| ----       Obtener PL de un usuario      ---- |||||
+
+  router.get('/user/:userID', async (req, res) => {
+    const { userID } = req.params; 
+    
+    try {
+      const allPlaylistUser = await prisma.playlist.findMany({
+        where: {
+          userId: Number(userID),
+        },
+      });
+
+      if (allPlaylistUser.length === 0) {
+        return res.status(404).json({ message: 'No se encontraron playlists para este usuario' });
+      }
+  
+      res.status(201).json({
+        data: allPlaylistUser
+    }); 
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Error al obtener las playlist' });
+    }
+});
   
 module.exports = router;  // Exportar el router
