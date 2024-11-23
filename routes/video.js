@@ -114,7 +114,7 @@ const storage = multer.diskStorage({ //En caso de que omitas el objeto con las o
             res.status(201).json(video);
         } catch ( error ) {
             console.error(error);
-            res.status(500).json({ error: 'Error al encontrar video'});
+            res.status(404).json({ error: 'Error al encontrar video'});
         }
     });
 //                                  |||| ----       GET un video por ID      ---- |||||

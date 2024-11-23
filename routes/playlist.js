@@ -118,7 +118,7 @@ const prisma = new PrismaClient();
       });
 
       if (allPlaylistUser.length === 0) {
-        return res.status(200).json({ message: 'No se encontraron playlists para este usuario' });
+        return res.status(404).json({ message: 'No se encontraron playlists para este usuario' });
       }
   
       res.status(201).json({
