@@ -191,7 +191,7 @@ router.get('/subscription', async (req, res) => {
       }
       
     } else {
-      res.status(404).json({ error: 'Suscripciones no encontradas' });
+      res.status(200).json({ error: 'Suscripciones no encontradas' });
     }
 
   } catch (error) {
@@ -218,6 +218,10 @@ router.get('/subscribers/:canalId', async (req, res) => {
         }
     });
 
+    if (!totalSuscriptores) {
+      return res.status(404).json({ _count: { suscriptores: 0 } });
+    }
+
     res.status(200).json(totalSuscriptores);
 
   } catch (error) {
@@ -225,5 +229,48 @@ router.get('/subscribers/:canalId', async (req, res) => {
     res.status(500).json({ error: 'Error al obtener total de suscriptores' });
   }
 });
+
+
+//                                  |||| ----       GET Videos de Suscripciones      ---- |||||
+router.get('/videos-sus/:usuarioId', async (req, res) => {
+  const { usuarioId } = req.params;
+
+  try {
+    // Obtener los canales a los que el usuario está suscrito
+    const suscripciones = await prisma.user.findUnique({
+      where: { id: Number(usuarioId) },
+      select: {
+        suscripciones: {
+          select: {
+            id: true, // Para obtener el ID de los canales
+            videos: { // Obtener los videos de cada canal
+              select: {
+                id: true,
+                nombre: true,
+                desc: true,
+                ruta: true,
+                fAlta: true,
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Validar si el usuario tiene suscripciones
+    if (!suscripciones || suscripciones.suscripciones.length === 0) {
+      return res.status(404).json({ message: 'El usuario no tiene suscripciones.' });
+    }
+
+    // Extraer los videos de las suscripciones
+    const videos = suscripciones.suscripciones.flatMap(canal => canal.videos);
+
+    res.status(200).json(videos);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al obtener los videos de las suscripciones' });
+  }
+});
+
 
 module.exports = router;  // Exportar el router

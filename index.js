@@ -19,9 +19,28 @@ const prisma = new PrismaClient();
 
 app.use(express.json()); //usar funciones JSON
 
+/* Solo aceptar cosas de 5173
 app.use(cors({
   origin: 'http://localhost:5173' // Solo permite solicitudes desde este origen
+})); */
+
+
+const allowedOrigins = [
+  'http://localhost:5173', // Origen local
+  'https://ec6d-189-219-191-249.ngrok-free.app' // Origen de Ngrok 
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+      // Permitir solicitudes sin origen (por ejemplo, herramientas como Postman)
+      if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true);
+      } else {
+          callback(new Error('No permitido por CORS'));
+      }
+  }
 }));
+
 
 //Multer (las carpetas se crean solas)
 const uploadFoto = multer({dest:'uploads/fotos/'});
